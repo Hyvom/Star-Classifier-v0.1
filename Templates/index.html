@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Star Type Classifier</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 20px;
+            background-color: #0b1020;
+            color: #f0f0f0;
+        }
+        h1 {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-top: 12px;
+        }
+        input {
+            width: 100%;
+            padding: 6px;
+            margin-top: 4px;
+        }
+        button {
+            margin-top: 16px;
+            padding: 10px 16px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 12px;
+            background-color: #151b2f;
+            border-radius: 4px;
+        }
+        .error {
+            color: #ff8080;
+        }
+    </style>
+</head>
+<body>
+    <h1>Star Type Classifier</h1>
+
+    <form id="star-form">
+        <label>
+            Temperature (K):
+            <input type="number" id="temperature" step="0.01" required>
+        </label>
+
+        <label>
+            Luminosity (L/Lo):
+            <input type="number" id="luminosity" step="0.00001" required>
+        </label>
+
+        <label>
+            Radius (R/Ro):
+            <input type="number" id="radius" step="0.00001" required>
+        </label>
+
+        <label>
+            Absolute magnitude (Mv):
+            <input type="number" id="absolute_magnitude" step="0.01" required>
+        </label>
+
+        <button type="submit">Predict Star Type</button>
+    </form>
+
+    <div id="result" class="result"></div>
+
+    <script>
+        const form = document.getElementById('star-form');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            resultDiv.textContent = "Predicting...";
+            resultDiv.classList.remove('error');
+
+            const payload = {
+                temperature: parseFloat(document.getElementById('temperature').value),
+                luminosity: parseFloat(document.getElementById('luminosity').value),
+                radius: parseFloat(document.getElementById('radius').value),
+                absolute_magnitude: parseFloat(document.getElementById('absolute_magnitude').value)
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    resultDiv.textContent = "Error: " + (errData.error || response.statusText);
+                    resultDiv.classList.add('error');
+                    return;
+                }
+
+                const data = await response.json();
+                resultDiv.textContent =
+                    `Predicted star type: ${data.star_type} (code: ${data.star_type_code})`;
+            } catch (error) {
+                resultDiv.textContent = "Error: " + error.message;
+                resultDiv.classList.add('error');
+            }
+        });
+    </script>
+</body>
+</html>
