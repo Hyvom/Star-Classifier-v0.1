@@ -21,18 +21,14 @@
             min-height: 100vh;
             font-family: "Segoe UI", Arial, sans-serif;
             color: #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
             background-color: var(--bg-dark);
             background-image: url("/static/giant-stars-4k-space-q03wbnsie2ul47hh.jpg");
             background-size: cover;
             background-position: center;
-            background-repeat: no-repeat;
             background-attachment: fixed;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto; /* allow vertical scroll */
         }
 
         body::before {
@@ -270,17 +266,24 @@
                 gap: 6px;
             }
         }
+    .page-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    }
     </style>
 </head>
 <body>
-    <div class="shell">
-        <nav class="nav">
+    <div class="page-wrapper">
+
+        <div class="shell">
+            <nav class="nav">
             <div class="nav-title">Star Classifier</div>
             <div class="nav-links">
                 <a href="/" class="active">Predict</a>
                 <a href="/model">Model & Features</a>
                 <a href="/stars">Stars & Types</a>
                 <a href="/exoplanet">Exoplanet Mass</a>
+                <a href="/diagrams">Diagrams</a>
             </div>
         </nav>
 
@@ -318,7 +321,7 @@
                     <label for="absolute_magnitude">Absolute magnitude (Mv)</label>
                     <input type="number" id="absolute_magnitude" step="0.01" required>
                 </div>
-
+                
                 <div class="actions">
                     <button type="submit">Predict Star Type</button>
                 </div>
@@ -327,6 +330,7 @@
             <div id="result" class="result"></div>
         </div>
     </div>
+</div>
 
     <script>
         const form = document.getElementById('star-form');
@@ -336,7 +340,7 @@
             event.preventDefault();
             resultDiv.textContent = "Predicting...";
             resultDiv.classList.remove('error', 'highlight');
-
+            
             const payload = {
                 temperature: parseFloat(document.getElementById('temperature').value),
                 luminosity: parseFloat(document.getElementById('luminosity').value),
@@ -379,6 +383,6 @@
                 resultDiv.classList.add('error');
             }
         });
-    </script>
+        </script>
 </body>
 </html>

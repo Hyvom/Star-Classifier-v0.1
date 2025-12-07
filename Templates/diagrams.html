@@ -274,75 +274,84 @@
 </head>
 <body>
     <div class="page-wrapper">
-
+        
         <div class="shell">
             <nav class="nav">
             <div class="nav-title">Star Classifier</div>
             <div class="nav-links">
                 <a href="/">Predict</a>
                 <a href="/model">Model & Features</a>
-                <a href="/stars" class="active">Stars & Types</a>
+                <a href="/stars">Stars & Types</a>
                 <a href="/exoplanet">Exoplanet Mass</a>
-                <a href="/diagrams">Diagrams</a>
+                <a href="/diagrams" class="active">Diagrams</a>
             </div>
         </nav>
 
         <div class="container">
-            <h1>Galaxies, Stars & Types</h1>
-            <div class="subtitle">From nuclear fusion to stellar classification</div>
+            <h1>Model Diagrams</h1>
+            <div class="subtitle">Classification & Regression visualizations</div>
 
             <div class="intro">
-                Galaxies are vast systems of stars, gas, dust, and dark matter bound together by gravity. Each galaxy
-                may contain billions or even trillions of stars, ranging from faint red dwarfs to short‑lived blue
-                giants. What makes a star a star is the presence of <strong>nuclear fusion</strong> in its core:
-                hydrogen nuclei are forced together under extreme temperature and pressure to form helium, releasing
-                enormous amounts of energy. This energy flows outward and balances the inward pull of gravity, creating
-                a stable structure known as <strong>hydrostatic equilibrium</strong>. Without this balance, a cloud of
-                gas would simply collapse, and a star would never shine for millions or billions of years. [web:83][web:85]
+                This page displays all key diagrams generated during model training. The <strong>star classifier</strong>
+                shows confusion matrix and temperature-luminosity scatter (HR diagram style), while the <strong>exoplanet
+                regression</strong> includes true-vs-predicted mass and residuals plots. Use these for your project report.
             </div>
+
+            <!-- Star Classifier Section -->
+            <h2 style="margin:20px 0 12px 0;font-size:1.15rem;color:var(--primary);">⭐ Star Type Classifier</h2>
+            
+            <div class="intro">
+                <strong>Confusion Matrix.</strong> Diagonal values show correctly classified stars. Perfect diagonal = 100% accuracy.
+            </div>
+            <img src="/static/star_confusion_matrix.png" alt="Star Confusion Matrix" 
+                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
 
             <div class="intro">
-                Astronomers classify stars using several key observables: <strong>surface temperature</strong>,
-                <strong>luminosity</strong>, <strong>radius</strong>, and <strong>color or spectral type</strong>.
-                When these properties are plotted on the Hertzsprung–Russell diagram, most stars fall along a diagonal
-                band called the <strong>main sequence</strong>, where stars spend the majority of their lifetimes
-                fusing hydrogen into helium. Hot, massive blue stars lie at the upper left with high temperatures and
-                huge luminosities, while small, cool red stars occupy the lower right. Above the main sequence we find
-                <strong>giants</strong> and <strong>supergiants</strong>, which are very luminous but often cooler,
-                implying very large radii. Below the main sequence are compact objects such as <strong>white dwarfs</strong>,
-                which are hot but faint because their radii are much smaller. [web:82][web:84][web:89]
+                <strong>HR Diagram (Temperature vs Luminosity).</strong> Stars colored by true type, showing natural separation.
             </div>
+            <img src="/static/star_hr_scatter.png" alt="Star HR Diagram" 
+                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
 
             <div class="intro">
-                In this project, the dataset includes six broad star types, such as brown dwarfs, red dwarfs, white
-                dwarfs, main‑sequence stars, supergiants, and hypergiants. Brown dwarfs are substellar objects that
-                never sustain stable hydrogen fusion; they are relatively cool and faint, with low luminosities and
-                small radii. Red dwarfs are low‑mass main‑sequence stars that are cooler and less luminous than the
-                Sun, but very common in the universe. White dwarfs are the dense remnants of stars like the Sun, with
-                high temperatures but tiny radii, so they appear hot yet intrinsically faint. Supergiants and
-                hypergiants represent the opposite extreme: they are extremely luminous and often have radii hundreds
-                or thousands of times the Sun’s, placing them high on the HR diagram even when their temperatures are
-                only moderate. [web:88][web:91]
+                <strong>Decision Tree (first 3 levels).</strong> Shows the learned splitting rules on features.
             </div>
+            <img src="/static/star_decision_tree.png" alt="Decision Tree" 
+                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
+
+            <!-- Exoplanet Regression Section -->
+            <h2 style="margin:20px 0 12px 0;font-size:1.15rem;color:var(--secondary);">🪐 Exoplanet Mass Regression</h2>
+            
+            <div class="intro">
+                <strong>True vs Predicted Mass.</strong> Red dashed line = perfect prediction. Points near line = good predictions.
+            </div>
+            <img src="/static/exoplanet_true_vs_pred.png" alt="Exoplanet True vs Predicted" 
+                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
 
             <div class="intro">
-                The features in your CSV—temperature, luminosity, radius, and absolute magnitude—are exactly the
-                quantities that astronomers use to distinguish these classes. A star with very high temperature and
-                luminosity is likely to be a massive blue main‑sequence star or a blue supergiant, while one with low
-                temperature and high luminosity must have a very large radius, characteristic of red giants and
-                supergiants. Conversely, an object with high temperature but low luminosity and small radius fits the
-                profile of a white dwarf. By feeding these numerical values into the model, the system effectively
-                recreates the logic of the Hertzsprung–Russell diagram in an automated way: instead of placing the
-                point by hand on a plot, the decision tree uses learned thresholds to assign the most probable type.
-                This is why the same four physical features are sufficient for both the human classification scheme
-                and the machine learning classifier used in this project. [web:82][web:83][web:88]
+                <strong>Residuals Plot.</strong> Horizontal band around zero = unbiased predictions. Patterns indicate model limitations.
             </div>
+            <img src="/static/exoplanet_residuals.png" alt="Exoplanet Residuals" 
+                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
 
-            <!-- Example image slots (replace with your own local images) -->
-            <img src="C:/images/galaxy.jpg" alt="Spiral galaxy view" style="width:100%;border-radius:10px;margin:10px 0;">
-            <img src="C:/images/hr-diagram.jpg" alt="Stylized Hertzsprung–Russell diagram" style="width:100%;border-radius:10px;margin:10px 0;">
+            <!-- Summary Table -->
+            <div class="intro" style="background:rgba(15,23,42,0.95);">
+                <h3 style="margin:0 0 8px 0;font-size:1rem;">Model Performance Summary</h3>
+                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
+                    <tr style="background:rgba(56,189,248,0.2);">
+                        <th>Model</th><th>Metric</th><th>Value</th>
+                    </tr>
+                    <tr><td rowspan="4">Star Classifier</td><td>Accuracy</td><td>100.0%</td></tr>
+                    <tr><td>Precision (avg)</td><td>100.0%</td></tr>
+                    <tr><td>Recall (avg)</td><td>100.0%</td></tr>
+                    <tr><td>F1-score (avg)</td><td>100.0%</td></tr>
+                    <tr style="background:rgba(34,197,94,0.2);">
+                        <td rowspan="3">Exoplanet Regression</td><td>MAE</td><td>[from metrics]</td></tr>
+                    <tr><td>RMSE</td><td>[from metrics]</td></tr>
+                    <tr><td>R²</td><td>[from metrics]</td></tr>
+                </table>
+            </div>
         </div>
     </div>
-</div>
+    </div>
 </body>
 </html>

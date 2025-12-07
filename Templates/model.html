@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Model & Features</title>
-        <style>
+    <title>Star Type Classifier</title>
+    <style>
         :root {
             --primary: #7fffd4;
             --secondary: #4fd1ff;
@@ -21,9 +21,6 @@
             min-height: 100vh;
             font-family: "Segoe UI", Arial, sans-serif;
             color: #e5e7eb;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             padding: 20px;
             background-color: var(--bg-dark);
             background-image: url("/static/giant-stars-4k-space-q03wbnsie2ul47hh.jpg");
@@ -31,7 +28,7 @@
             background-position: center;
             background-attachment: fixed;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto; /* allow vertical scroll */
         }
 
         body::before {
@@ -54,6 +51,8 @@
         .shell {
             width: 100%;
             max-width: 900px;
+            position: relative;
+            z-index: 1;
         }
 
         .nav {
@@ -218,6 +217,14 @@
             box-shadow:
                 0 0 18px rgba(56,189,248,0.6),
                 0 0 6px rgba(15,23,42,0.9);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 24px rgba(56,189,248,0.8),
+                0 4px 12px rgba(15,23,42,0.9);
         }
 
         .result {
@@ -259,16 +266,25 @@
                 gap: 6px;
             }
         }
+    .page-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    }
     </style>
 </head>
 <body>
-    <div class="shell">
-        <nav class="nav">
+    <div class="page-wrapper">
+
+        <div class="shell">
+            <nav class="nav">
             <div class="nav-title">Star Classifier</div>
             <div class="nav-links">
                 <a href="/">Predict</a>
                 <a href="/model" class="active">Model & Features</a>
                 <a href="/stars">Stars & Types</a>
+                <a href="/exoplanet">Exoplanet Mass</a>
+                <a href="/diagrams">Diagrams</a>
+    
             </div>
         </nav>
 
@@ -309,7 +325,7 @@
                 relates luminosity to temperature and radius, and they define a star’s position on the
                 <strong>Hertzsprung–Russell diagram</strong>, a fundamental tool for classifying stars. [web:82][web:85]
             </div>
-
+            
             <div class="intro">
                 During evaluation, the model is tested on a held‑out subset of stars that were not used for training.
                 The metrics reported—accuracy, precision, recall, and F1‑score—summarize how well the decision tree
@@ -322,5 +338,6 @@
             </div>
         </div>
     </div>
+</div>
 </body>
 </html>

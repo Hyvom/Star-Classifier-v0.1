@@ -42,6 +42,9 @@ def exoplanet_page():
 def stars_page():
     return render_template("stars.html")
 
+@app.route("/diagrams")
+def diagrams_page():
+    return render_template("diagrams.html")
 
 @app.route("/predict", methods=["POST"])
 def predict():
