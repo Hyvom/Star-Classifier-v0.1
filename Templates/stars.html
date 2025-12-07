@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Star Type Classifier</title>
-    <style>
+    <title>Stars & Types</title>
+        <style>
         :root {
             --primary: #7fffd4;
             --secondary: #4fd1ff;
@@ -266,107 +266,67 @@
         <nav class="nav">
             <div class="nav-title">Star Classifier</div>
             <div class="nav-links">
-                <a href="/" class="active">Predict</a>
+                <a href="/">Predict</a>
                 <a href="/model">Model & Features</a>
-                <a href="/stars">Stars & Types</a>
+                <a href="/stars" class="active">Stars & Types</a>
             </div>
         </nav>
 
         <div class="container">
-            <h1>Star Type Classifier</h1>
-            <div class="subtitle">Interactive prediction using stellar physics</div>
+            <h1>Galaxies, Stars & Types</h1>
+            <div class="subtitle">From nuclear fusion to stellar classification</div>
 
             <div class="intro">
-                This interface connects to a trained <strong>machine learning model</strong> that receives four
-                physical properties of a star—temperature, luminosity, radius, and absolute magnitude—and predicts
-                the most likely <strong>stellar class</strong>. The model has already been evaluated on a test set,
-                and the metrics shown below each prediction summarize how well it distinguishes between the six
-                star types in the dataset. By varying the inputs, you can explore how small changes in temperature
-                or brightness can move a star from one region of the Hertzsprung–Russell diagram to another and
-                change the class the model assigns.
+                Galaxies are vast systems of stars, gas, dust, and dark matter bound together by gravity. Each galaxy
+                may contain billions or even trillions of stars, ranging from faint red dwarfs to short‑lived blue
+                giants. What makes a star a star is the presence of <strong>nuclear fusion</strong> in its core:
+                hydrogen nuclei are forced together under extreme temperature and pressure to form helium, releasing
+                enormous amounts of energy. This energy flows outward and balances the inward pull of gravity, creating
+                a stable structure known as <strong>hydrostatic equilibrium</strong>. Without this balance, a cloud of
+                gas would simply collapse, and a star would never shine for millions or billions of years. [web:83][web:85]
             </div>
 
-            <form id="star-form">
-                <div class="field">
-                    <label for="temperature">Temperature (K)</label>
-                    <input type="number" id="temperature" step="0.01" required>
-                </div>
+            <div class="intro">
+                Astronomers classify stars using several key observables: <strong>surface temperature</strong>,
+                <strong>luminosity</strong>, <strong>radius</strong>, and <strong>color or spectral type</strong>.
+                When these properties are plotted on the Hertzsprung–Russell diagram, most stars fall along a diagonal
+                band called the <strong>main sequence</strong>, where stars spend the majority of their lifetimes
+                fusing hydrogen into helium. Hot, massive blue stars lie at the upper left with high temperatures and
+                huge luminosities, while small, cool red stars occupy the lower right. Above the main sequence we find
+                <strong>giants</strong> and <strong>supergiants</strong>, which are very luminous but often cooler,
+                implying very large radii. Below the main sequence are compact objects such as <strong>white dwarfs</strong>,
+                which are hot but faint because their radii are much smaller. [web:82][web:84][web:89]
+            </div>
 
-                <div class="field">
-                    <label for="luminosity">Luminosity (L/Lo)</label>
-                    <input type="number" id="luminosity" step="0.00001" required>
-                </div>
+            <div class="intro">
+                In this project, the dataset includes six broad star types, such as brown dwarfs, red dwarfs, white
+                dwarfs, main‑sequence stars, supergiants, and hypergiants. Brown dwarfs are substellar objects that
+                never sustain stable hydrogen fusion; they are relatively cool and faint, with low luminosities and
+                small radii. Red dwarfs are low‑mass main‑sequence stars that are cooler and less luminous than the
+                Sun, but very common in the universe. White dwarfs are the dense remnants of stars like the Sun, with
+                high temperatures but tiny radii, so they appear hot yet intrinsically faint. Supergiants and
+                hypergiants represent the opposite extreme: they are extremely luminous and often have radii hundreds
+                or thousands of times the Sun’s, placing them high on the HR diagram even when their temperatures are
+                only moderate. [web:88][web:91]
+            </div>
 
-                <div class="field">
-                    <label for="radius">Radius (R/Ro)</label>
-                    <input type="number" id="radius" step="0.00001" required>
-                </div>
+            <div class="intro">
+                The features in your CSV—temperature, luminosity, radius, and absolute magnitude—are exactly the
+                quantities that astronomers use to distinguish these classes. A star with very high temperature and
+                luminosity is likely to be a massive blue main‑sequence star or a blue supergiant, while one with low
+                temperature and high luminosity must have a very large radius, characteristic of red giants and
+                supergiants. Conversely, an object with high temperature but low luminosity and small radius fits the
+                profile of a white dwarf. By feeding these numerical values into the model, the system effectively
+                recreates the logic of the Hertzsprung–Russell diagram in an automated way: instead of placing the
+                point by hand on a plot, the decision tree uses learned thresholds to assign the most probable type.
+                This is why the same four physical features are sufficient for both the human classification scheme
+                and the machine learning classifier used in this project. [web:82][web:83][web:88]
+            </div>
 
-                <div class="field">
-                    <label for="absolute_magnitude">Absolute magnitude (Mv)</label>
-                    <input type="number" id="absolute_magnitude" step="0.01" required>
-                </div>
-
-                <div class="actions">
-                    <button type="submit">Predict Star Type</button>
-                </div>
-            </form>
-
-            <div id="result" class="result"></div>
+            <!-- Example image slots (replace with your own local images) -->
+            <img src="C:/images/galaxy.jpg" alt="Spiral galaxy view" style="width:100%;border-radius:10px;margin:10px 0;">
+            <img src="C:/images/hr-diagram.jpg" alt="Stylized Hertzsprung–Russell diagram" style="width:100%;border-radius:10px;margin:10px 0;">
         </div>
     </div>
-
-    <script>
-        const form = document.getElementById('star-form');
-        const resultDiv = document.getElementById('result');
-
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            resultDiv.textContent = "Predicting...";
-            resultDiv.classList.remove('error', 'highlight');
-
-            const payload = {
-                temperature: parseFloat(document.getElementById('temperature').value),
-                luminosity: parseFloat(document.getElementById('luminosity').value),
-                radius: parseFloat(document.getElementById('radius').value),
-                absolute_magnitude: parseFloat(document.getElementById('absolute_magnitude').value)
-            };
-
-            try {
-                const response = await fetch('/predict', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errData = await response.json();
-                    resultDiv.textContent = "Error: " + (errData.error || response.statusText);
-                    resultDiv.classList.add('error');
-                    return;
-                }
-
-                const data = await response.json();
-                let text = `Predicted star type: ${data.star_type} (code: ${data.star_type_code})`;
-                if (data.confidence !== undefined) {
-                    text += `\nConfidence: ${(data.confidence * 100).toFixed(2)}%`;
-                }
-                if (data.metrics) {
-                    text += `\nOverall accuracy: ${(data.metrics.overall_accuracy * 100).toFixed(2)}%`;
-                    if (data.metrics.class_precision !== null) {
-                        text += `\nClass precision: ${(data.metrics.class_precision * 100).toFixed(2)}%`;
-                        text += `\nClass recall: ${(data.metrics.class_recall * 100).toFixed(2)}%`;
-                        text += `\nClass F1-score: ${(data.metrics.class_f1 * 100).toFixed(2)}%`;
-                    }
-                }
-                resultDiv.textContent = text;
-                resultDiv.classList.add('highlight');
-
-            } catch (error) {
-                resultDiv.textContent = "Error: " + error.message;
-                resultDiv.classList.add('error');
-            }
-        });
-    </script>
 </body>
 </html>

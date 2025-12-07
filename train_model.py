@@ -3,12 +3,10 @@ from sklearn.model_selection import train_test_split
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import classification_report, accuracy_score
 import joblib
+import json
 
-# 1. Load data
 df = pd.read_csv("6 class csv.csv")
 
-# 2. Features and target
-# Use numeric physical features as X and "Star type" as y
 feature_cols = [
     "Temperature (K)",
     "Luminosity(L/Lo)",
@@ -18,12 +16,10 @@ feature_cols = [
 X = df[feature_cols]
 y = df["Star type"]
 
-# 3. Train/test split
 X_train, X_test, y_train, y_test = train_test_split(
     X, y, test_size=0.2, random_state=42, stratify=y
 )
 
-# 4. Model
 model = DecisionTreeClassifier(
     criterion="gini",
     max_depth=None,
@@ -31,11 +27,23 @@ model = DecisionTreeClassifier(
 )
 model.fit(X_train, y_train)
 
-# 5. Evaluation
 y_pred = model.predict(X_test)
-print("Accuracy:", accuracy_score(y_test, y_pred))
+
+acc = accuracy_score(y_test, y_pred)
+report = classification_report(y_test, y_pred, output_dict=True)
+
+print("Accuracy:", acc)
 print(classification_report(y_test, y_pred))
 
-# 6. Save model
+# Save model
 joblib.dump(model, "star_model.joblib")
 print("Model saved to star_model.joblib")
+
+# Save metrics
+metrics = {
+    "accuracy": acc,
+    "report": report
+}
+with open("metrics.json", "w") as f:
+    json.dump(metrics, f, indent=4)
+print("Metrics saved to metrics.json")

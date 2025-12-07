@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Star Type Classifier</title>
-    <style>
+    <title>Model & Features</title>
+        <style>
         :root {
             --primary: #7fffd4;
             --secondary: #4fd1ff;
@@ -266,107 +266,61 @@
         <nav class="nav">
             <div class="nav-title">Star Classifier</div>
             <div class="nav-links">
-                <a href="/" class="active">Predict</a>
-                <a href="/model">Model & Features</a>
+                <a href="/">Predict</a>
+                <a href="/model" class="active">Model & Features</a>
                 <a href="/stars">Stars & Types</a>
             </div>
         </nav>
 
         <div class="container">
-            <h1>Star Type Classifier</h1>
-            <div class="subtitle">Interactive prediction using stellar physics</div>
+            <h1>How the Model Works</h1>
+            <div class="subtitle">Decision tree classifier on stellar properties</div>
 
             <div class="intro">
-                This interface connects to a trained <strong>machine learning model</strong> that receives four
-                physical properties of a star—temperature, luminosity, radius, and absolute magnitude—and predicts
-                the most likely <strong>stellar class</strong>. The model has already been evaluated on a test set,
-                and the metrics shown below each prediction summarize how well it distinguishes between the six
-                star types in the dataset. By varying the inputs, you can explore how small changes in temperature
-                or brightness can move a star from one region of the Hertzsprung–Russell diagram to another and
-                change the class the model assigns.
+                The core of this project is a <strong>Decision Tree classifier</strong>, a supervised machine learning
+                algorithm that learns a set of if‑then rules from labeled examples. Each star in the training dataset
+                is described by four physical features: <strong>temperature</strong>, <strong>luminosity</strong>,
+                <strong>radius</strong>, and <strong>absolute magnitude</strong>. The decision tree repeatedly splits
+                the data based on thresholds on these features, such as “temperature &gt; 10,000 K” or “luminosity
+                &lt; 0.01 L/Lo”, to separate different star types into purer groups. At the end of training, each leaf
+                of the tree corresponds to a region of the feature space where most stars belong to a single class,
+                for example white dwarfs or supergiants. [web:73][web:80]
             </div>
 
-            <form id="star-form">
-                <div class="field">
-                    <label for="temperature">Temperature (K)</label>
-                    <input type="number" id="temperature" step="0.01" required>
-                </div>
+            <div class="intro">
+                For a new star, the model follows exactly the same set of rules: it starts at the root of the tree and
+                moves down, evaluating each condition on the input features until it reaches a leaf. The class with the
+                highest proportion of training examples in that leaf becomes the prediction, and the relative frequency
+                of each class in that leaf is used to compute a <strong>probability distribution</strong> over all six
+                types, which appears in the interface as the “confidence” of the prediction. This approach works well
+                on structured scientific data, where meaningful physical thresholds exist, such as the temperature
+                ranges that separate hot blue stars from cooler red stars or the luminosity gaps between dwarfs and
+                supergiants. [web:73][web:72]
+            </div>
 
-                <div class="field">
-                    <label for="luminosity">Luminosity (L/Lo)</label>
-                    <input type="number" id="luminosity" step="0.00001" required>
-                </div>
+            <div class="intro">
+                The features in the CSV file have clear astrophysical interpretations. The
+                <strong>temperature</strong> (in Kelvin) controls the color of the star and reflects the average
+                surface energy of the emitted photons. The <strong>luminosity</strong> (in units of the Sun’s
+                luminosity L/Lo) measures the total power output, while the <strong>radius</strong> (in units of the
+                Sun’s radius R/Ro) tells how large the star is compared to the Sun. The <strong>absolute magnitude</strong>
+                is a logarithmic measure of intrinsic brightness: lower or more negative magnitudes correspond to more
+                luminous stars. Together, these quantities are strongly linked by the Stefan–Boltzmann law, which
+                relates luminosity to temperature and radius, and they define a star’s position on the
+                <strong>Hertzsprung–Russell diagram</strong>, a fundamental tool for classifying stars. [web:82][web:85]
+            </div>
 
-                <div class="field">
-                    <label for="radius">Radius (R/Ro)</label>
-                    <input type="number" id="radius" step="0.00001" required>
-                </div>
-
-                <div class="field">
-                    <label for="absolute_magnitude">Absolute magnitude (Mv)</label>
-                    <input type="number" id="absolute_magnitude" step="0.01" required>
-                </div>
-
-                <div class="actions">
-                    <button type="submit">Predict Star Type</button>
-                </div>
-            </form>
-
-            <div id="result" class="result"></div>
+            <div class="intro">
+                During evaluation, the model is tested on a held‑out subset of stars that were not used for training.
+                The metrics reported—accuracy, precision, recall, and F1‑score—summarize how well the decision tree
+                distinguishes each class. Accuracy measures the overall fraction of correct predictions, while
+                precision and recall focus on how reliably the model identifies a specific type, for example how often
+                objects predicted as “white dwarfs” are truly white dwarfs and how many actual white dwarfs are
+                recovered. The F1‑score is the harmonic mean of precision and recall. In this project, the model
+                achieves very high scores on all classes, which reflects the fact that the star types in the dataset
+                occupy well separated regions in temperature–luminosity space. [web:74][web:79][web:81]
+            </div>
         </div>
     </div>
-
-    <script>
-        const form = document.getElementById('star-form');
-        const resultDiv = document.getElementById('result');
-
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            resultDiv.textContent = "Predicting...";
-            resultDiv.classList.remove('error', 'highlight');
-
-            const payload = {
-                temperature: parseFloat(document.getElementById('temperature').value),
-                luminosity: parseFloat(document.getElementById('luminosity').value),
-                radius: parseFloat(document.getElementById('radius').value),
-                absolute_magnitude: parseFloat(document.getElementById('absolute_magnitude').value)
-            };
-
-            try {
-                const response = await fetch('/predict', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-
-                if (!response.ok) {
-                    const errData = await response.json();
-                    resultDiv.textContent = "Error: " + (errData.error || response.statusText);
-                    resultDiv.classList.add('error');
-                    return;
-                }
-
-                const data = await response.json();
-                let text = `Predicted star type: ${data.star_type} (code: ${data.star_type_code})`;
-                if (data.confidence !== undefined) {
-                    text += `\nConfidence: ${(data.confidence * 100).toFixed(2)}%`;
-                }
-                if (data.metrics) {
-                    text += `\nOverall accuracy: ${(data.metrics.overall_accuracy * 100).toFixed(2)}%`;
-                    if (data.metrics.class_precision !== null) {
-                        text += `\nClass precision: ${(data.metrics.class_precision * 100).toFixed(2)}%`;
-                        text += `\nClass recall: ${(data.metrics.class_recall * 100).toFixed(2)}%`;
-                        text += `\nClass F1-score: ${(data.metrics.class_f1 * 100).toFixed(2)}%`;
-                    }
-                }
-                resultDiv.textContent = text;
-                resultDiv.classList.add('highlight');
-
-            } catch (error) {
-                resultDiv.textContent = "Error: " + error.message;
-                resultDiv.classList.add('error');
-            }
-        });
-    </script>
 </body>
 </html>
