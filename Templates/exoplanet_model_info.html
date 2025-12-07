@@ -274,86 +274,73 @@
 </head>
 <body>
     <div class="page-wrapper">
-        
+
         <div class="shell">
             <nav class="nav">
             <div class="nav-title">Star Classifier</div>
             <div class="nav-links">
                 <a href="/">Predict</a>
-                <a href="/model">Model & Features</a>
+                <a href="/model">Star Model</a>
                 <a href="/stars">Stars & Types</a>
                 <a href="/exoplanet">Exoplanet Mass</a>
+                <a href="/diagrams">Diagrams</a>
                 <a href="exoplanet_mass_info.html">Exoplanet Mass</a>
-                <a href="exoplanet_model_info.html">Exoplanet Model</a>
-                <a href="/diagrams" class="active">Diagrams</a>
+                <a href="/exoplanet_model_info" class="active">Exoplanet Model</a>
             </div>
         </nav>
 
         <div class="container">
-            <h1>Model Diagrams</h1>
-            <div class="subtitle">Classification & Regression visualizations</div>
+            <h1>How the Exoplanet Model Works</h1>
+            <div class="subtitle">Linear regression on exoplanet catalog</div>
 
             <div class="intro">
-                This page displays all key diagrams generated during model training. The <strong>star classifier</strong>
-                shows confusion matrix and temperature-luminosity scatter (HR diagram style), while the <strong>exoplanet
-                regression</strong> includes true-vs-predicted mass and residuals plots. Use these for your project report.
+                The exoplanet mass model in this project is a <strong>linear regression</strong> trained on a cleaned
+                catalog of more than five thousand exoplanets. Each entry in the dataset describes a discovered planet
+                with numerical properties such as <strong>distance</strong> to its host star, <strong>stellar
+                magnitude</strong>, <strong>orbital radius</strong>, <strong>orbital period</strong>,
+                <strong>eccentricity</strong>, and <strong>discovery year</strong>, as well as a target value called
+                the <strong>mass multiplier</strong>, which encodes the planet’s mass in units of Earth or Jupiter
+                masses. The goal of the model is to learn how these observable quantities relate to the underlying
+                mass so that the mass of new planets can be estimated from similar measurements. [file:93][web:18]
             </div>
-
-            <!-- Star Classifier Section -->
-            <h2 style="margin:20px 0 12px 0;font-size:1.15rem;color:var(--primary);">⭐ Star Type Classifier</h2>
-            
-            <div class="intro">
-                <strong>Confusion Matrix.</strong> Diagonal values show correctly classified stars. Perfect diagonal = 100% accuracy.
-            </div>
-            <img src="/static/star_confusion_matrix.png" alt="Star Confusion Matrix" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
 
             <div class="intro">
-                <strong>HR Diagram (Temperature vs Luminosity).</strong> Stars colored by true type, showing natural separation.
+                Mathematically, a linear regression model predicts the target value as a weighted sum of the input
+                features plus a constant offset. In this case, the predicted mass multiplier \( \hat{m} \) is modeled
+                as a combination of distance, stellar brightness, orbital parameters, and discovery year, each
+                multiplied by a learned coefficient. Training the model means finding the values of these coefficients
+                that minimize the overall error between predicted and true masses on the training set. The algorithm
+                used (ordinary least squares) searches for the line or hyperplane in feature space that best fits all
+                the points in the sense of minimizing the sum of squared residuals. Because the relationship is
+                linear in the features, it is easy to inspect the learned coefficients and see which variables have the
+                strongest influence on the prediction. [web:99][web:102]
             </div>
-            <img src="/static/star_hr_scatter.png" alt="Star HR Diagram" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
 
             <div class="intro">
-                <strong>Decision Tree (first 3 levels).</strong> Shows the learned splitting rules on features.
+                To evaluate the model, the dataset is split into training and test subsets. After learning on the
+                training data, the model is applied to the unseen test exoplanets, and several regression metrics are
+                computed: <strong>MAE</strong> (mean absolute error), <strong>MSE</strong> (mean squared error),
+                <strong>RMSE</strong> (root mean squared error), and <strong>R²</strong> (coefficient of
+                determination). MAE and RMSE measure the typical size of the prediction error in units of the mass
+                multiplier, while R² indicates how much of the variability in the true masses is explained by the
+                features. Scatter plots of true versus predicted mass, together with residual plots, help visualize
+                these metrics by showing how closely the points follow the ideal one‑to‑one line and whether the
+                residuals are randomly spread around zero. [web:74][web:81]
             </div>
-            <img src="/static/star_decision_tree.png" alt="Decision Tree" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-
-            <!-- Exoplanet Regression Section -->
-            <h2 style="margin:20px 0 12px 0;font-size:1.15rem;color:var(--secondary);">🪐 Exoplanet Mass Regression</h2>
-            
-            <div class="intro">
-                <strong>True vs Predicted Mass.</strong> Red dashed line = perfect prediction. Points near line = good predictions.
-            </div>
-            <img src="/static/exoplanet_true_vs_pred.png" alt="Exoplanet True vs Predicted" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
 
             <div class="intro">
-                <strong>Residuals Plot.</strong> Horizontal band around zero = unbiased predictions. Patterns indicate model limitations.
-            </div>
-            <img src="/static/exoplanet_residuals.png" alt="Exoplanet Residuals" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-
-            <!-- Summary Table -->
-            <div class="intro" style="background:rgba(15,23,42,0.95);">
-                <h3 style="margin:0 0 8px 0;font-size:1rem;">Model Performance Summary</h3>
-                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
-                    <tr style="background:rgba(56,189,248,0.2);">
-                        <th>Model</th><th>Metric</th><th>Value</th>
-                    </tr>
-                    <tr><td rowspan="4">Star Classifier</td><td>Accuracy</td><td>100.0%</td></tr>
-                    <tr><td>Precision (avg)</td><td>100.0%</td></tr>
-                    <tr><td>Recall (avg)</td><td>100.0%</td></tr>
-                    <tr><td>F1-score (avg)</td><td>100.0%</td></tr>
-                    <tr style="background:rgba(34,197,94,0.2);">
-                        <td rowspan="3">Exoplanet Regression</td><td>MAE</td><td>[from metrics]</td></tr>
-                    <tr><td>RMSE</td><td>[from metrics]</td></tr>
-                    <tr><td>R²</td><td>[from metrics]</td></tr>
-                </table>
+                Although the underlying physics of planet formation and orbital dynamics is complex and often
+                non‑linear, linear regression can still capture the dominant trends present in the catalog. For
+                example, more massive planets are often found at particular ranges of orbital radius and period,
+                and certain detection methods are biased toward specific mass regimes. By exploiting these statistical
+                correlations, the model acts as a fast estimator that can suggest plausible mass values when direct
+                measurements (for example from radial velocity data) are difficult or unavailable. In more advanced
+                research, linear models are often combined with more flexible algorithms such as support vector
+                regression or neural networks, but the linear baseline remains valuable because it is simple to
+                interpret and easy to implement. [web:100][web:103]
             </div>
         </div>
     </div>
-    </div>
+</div>
 </body>
 </html>

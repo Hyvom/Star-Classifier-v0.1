@@ -274,86 +274,85 @@
 </head>
 <body>
     <div class="page-wrapper">
-        
+
         <div class="shell">
             <nav class="nav">
             <div class="nav-title">Star Classifier</div>
             <div class="nav-links">
                 <a href="/">Predict</a>
-                <a href="/model">Model & Features</a>
+                <a href="/model">Star Model</a>
                 <a href="/stars">Stars & Types</a>
                 <a href="/exoplanet">Exoplanet Mass</a>
-                <a href="exoplanet_mass_info.html">Exoplanet Mass</a>
-                <a href="exoplanet_model_info.html">Exoplanet Model</a>
-                <a href="/diagrams" class="active">Diagrams</a>
+                <a href="/diagrams">Diagrams</a>
+                <a href="/exoplanet_model_info">Exoplanet Model</a>
+                <a href="/exoplanet_mass_info" class="active">Exoplanet Mass Info</a>
             </div>
         </nav>
 
         <div class="container">
-            <h1>Model Diagrams</h1>
-            <div class="subtitle">Classification & Regression visualizations</div>
+            <h1>Understanding Exoplanet Mass</h1>
+            <div class="subtitle">What mass means and how we estimate it</div>
 
             <div class="intro">
-                This page displays all key diagrams generated during model training. The <strong>star classifier</strong>
-                shows confusion matrix and temperature-luminosity scatter (HR diagram style), while the <strong>exoplanet
-                regression</strong> includes true-vs-predicted mass and residuals plots. Use these for your project report.
+                The <strong>mass of an exoplanet</strong> is a measure of how much matter the planet contains and is
+                usually expressed in units of Earth masses or Jupiter masses. Because individual exoplanets are far too
+                distant to place on a scale, their masses are inferred indirectly from how strongly they interact with
+                their host stars. A planet’s gravity tugs on the star, causing small motions that can be detected in
+                the star’s spectrum (radial velocity method), or it affects the timing and shape of the star’s dimming
+                when the planet passes in front of it (transit timing and transit depth methods). By combining these
+                effects with Kepler’s laws of orbital motion, astronomers can estimate the planet’s mass from the
+                observed orbital period, the size of the orbit, and the star’s properties.
             </div>
 
-            <!-- Star Classifier Section -->
-            <h2 style="margin:20px 0 12px 0;font-size:1.15rem;color:var(--primary);">⭐ Star Type Classifier</h2>
+            <div class="intro">
+                In practice, many exoplanets have only partial information available. Transit surveys measure the
+                <strong>planet radius</strong> very precisely from the amount of starlight blocked during a transit,
+                but do not directly measure mass. Radial velocity surveys, on the other hand, are more sensitive to
+                massive planets in close orbits and often provide a quantity known as the <strong>minimum mass</strong>
+                (because the true mass depends on the unknown orbital inclination). For some systems, both techniques
+                are available, allowing astronomers to place planets on a <strong>mass–radius diagram</strong> and
+                study how different compositions—rocky, icy, or gas-dominated—populate distinct regions of this
+                space. These measurements have revealed empirical relationships between mass, radius, and other orbital
+                parameters for large populations of exoplanets.
+            </div>
+
+            <div class="intro">
+                The <strong>dataset used in this project</strong> collects thousands of confirmed exoplanets and
+                records properties such as distance to the system, stellar magnitude, orbital radius, orbital period,
+                eccentricity, and discovery year, together with a <strong>mass multiplier</strong> that expresses the
+                planet’s mass relative to Earth or Jupiter. Because these planets were detected with different methods,
+                the catalog contains a wide range of planetary systems: hot Jupiters, warm Neptunes, super-Earths, and
+                long-period cold giants. By treating the mass multiplier as a continuous numerical target, a regression
+                model can learn statistical patterns linking observable orbital and stellar characteristics to typical
+                planetary masses.
+            </div>
+
+            <div class="intro">
+                Predicting exoplanet mass with <strong>machine learning</strong> does not replace the detailed physics
+                behind planetary formation or detection techniques. Instead, it uses the idea that planets with similar
+                orbital periods, radii, and host-star properties often have similar masses. Linear regression, for
+                example, fits a function that maps orbital radius, period, eccentricity, and stellar brightness to an
+                approximate mass multiplier. When a new exoplanet is discovered and only some observables are known, the
+                model can provide a fast, rough mass estimate to guide follow-up observations—especially useful when
+                direct radial-velocity measurements are too weak or difficult to obtain.
+            </div>
+
+            <div class="intro">
+                From a scientific perspective, mass estimates are crucial because they help determine a planet’s
+                <strong>density</strong> when combined with radius, and therefore its likely composition. High-density
+                planets tend to be rocky, while low-density planets are dominated by thick gaseous envelopes. Knowing
+                how mass, radius, and orbital parameters are distributed across the exoplanet population offers insight
+                into how planetary systems form, how common each type of world is, and where potentially habitable
+                planets might exist. In this project, the <strong>predicted mass multiplier</strong> serves as a first,
+                data-driven approximation of a planet’s mass—useful for exploration, visualization, and understanding
+                large-scale exoplanet trends.
+            </div>
             
-            <div class="intro">
-                <strong>Confusion Matrix.</strong> Diagonal values show correctly classified stars. Perfect diagonal = 100% accuracy.
-            </div>
-            <img src="/static/star_confusion_matrix.png" alt="Star Confusion Matrix" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-
-            <div class="intro">
-                <strong>HR Diagram (Temperature vs Luminosity).</strong> Stars colored by true type, showing natural separation.
-            </div>
-            <img src="/static/star_hr_scatter.png" alt="Star HR Diagram" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-
-            <div class="intro">
-                <strong>Decision Tree (first 3 levels).</strong> Shows the learned splitting rules on features.
-            </div>
-            <img src="/static/star_decision_tree.png" alt="Decision Tree" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-
-            <!-- Exoplanet Regression Section -->
-            <h2 style="margin:20px 0 12px 0;font-size:1.15rem;color:var(--secondary);">🪐 Exoplanet Mass Regression</h2>
-            
-            <div class="intro">
-                <strong>True vs Predicted Mass.</strong> Red dashed line = perfect prediction. Points near line = good predictions.
-            </div>
-            <img src="/static/exoplanet_true_vs_pred.png" alt="Exoplanet True vs Predicted" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-
-            <div class="intro">
-                <strong>Residuals Plot.</strong> Horizontal band around zero = unbiased predictions. Patterns indicate model limitations.
-            </div>
-            <img src="/static/exoplanet_residuals.png" alt="Exoplanet Residuals" 
-                 style="width:100%;border-radius:12px;margin:8px 0;box-shadow:0 4px 12px rgba(0,0,0,0.3);">
-
-            <!-- Summary Table -->
-            <div class="intro" style="background:rgba(15,23,42,0.95);">
-                <h3 style="margin:0 0 8px 0;font-size:1rem;">Model Performance Summary</h3>
-                <table style="width:100%;border-collapse:collapse;font-size:0.85rem;">
-                    <tr style="background:rgba(56,189,248,0.2);">
-                        <th>Model</th><th>Metric</th><th>Value</th>
-                    </tr>
-                    <tr><td rowspan="4">Star Classifier</td><td>Accuracy</td><td>100.0%</td></tr>
-                    <tr><td>Precision (avg)</td><td>100.0%</td></tr>
-                    <tr><td>Recall (avg)</td><td>100.0%</td></tr>
-                    <tr><td>F1-score (avg)</td><td>100.0%</td></tr>
-                    <tr style="background:rgba(34,197,94,0.2);">
-                        <td rowspan="3">Exoplanet Regression</td><td>MAE</td><td>[from metrics]</td></tr>
-                    <tr><td>RMSE</td><td>[from metrics]</td></tr>
-                    <tr><td>R²</td><td>[from metrics]</td></tr>
-                </table>
-            </div>
+            <footer class="footer">
+                <p>© 2025 Exoplanet Mass Predictor — Educational Project</p>
+            </footer>
         </div>
     </div>
-    </div>
+</div>
 </body>
 </html>

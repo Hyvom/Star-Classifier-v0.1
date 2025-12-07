@@ -41,6 +41,13 @@ def exoplanet_page():
 @app.route("/stars")
 def stars_page():
     return render_template("stars.html")
+@app.route("/exoplanet_mass_info")
+def exoplanet_mass_info_page():
+    return render_template("exoplanet_mass_info.html")
+
+@app.route("/exoplanet_model_info")
+def exoplanet_model_info_page():
+    return render_template("exoplanet_model_info.html")
 
 @app.route("/diagrams")
 def diagrams_page():
