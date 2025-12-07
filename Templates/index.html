@@ -26,9 +26,10 @@
             justify-content: center;
             padding: 20px;
             background-color: var(--bg-dark);
-            background-image: url("C:/images/stars-background.jpg"); /* change this path */
+            background-image: url("/static/giant-stars-4k-space-q03wbnsie2ul47hh.jpg");
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
             position: relative;
             overflow: hidden;
@@ -54,6 +55,8 @@
         .shell {
             width: 100%;
             max-width: 900px;
+            position: relative;
+            z-index: 1;
         }
 
         .nav {
@@ -218,6 +221,14 @@
             box-shadow:
                 0 0 18px rgba(56,189,248,0.6),
                 0 0 6px rgba(15,23,42,0.9);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 24px rgba(56,189,248,0.8),
+                0 4px 12px rgba(15,23,42,0.9);
         }
 
         .result {
@@ -269,6 +280,7 @@
                 <a href="/" class="active">Predict</a>
                 <a href="/model">Model & Features</a>
                 <a href="/stars">Stars & Types</a>
+                <a href="/exoplanet">Exoplanet Mass</a>
             </div>
         </nav>
 

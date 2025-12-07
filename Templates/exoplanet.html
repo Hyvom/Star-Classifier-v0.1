@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Model & Features</title>
-        <style>
+    <title>Star Type Classifier</title>
+    <style>
         :root {
             --primary: #7fffd4;
             --secondary: #4fd1ff;
@@ -29,6 +29,7 @@
             background-image: url("/static/giant-stars-4k-space-q03wbnsie2ul47hh.jpg");
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
             background-attachment: fixed;
             position: relative;
             overflow: hidden;
@@ -54,6 +55,8 @@
         .shell {
             width: 100%;
             max-width: 900px;
+            position: relative;
+            z-index: 1;
         }
 
         .nav {
@@ -218,6 +221,14 @@
             box-shadow:
                 0 0 18px rgba(56,189,248,0.6),
                 0 0 6px rgba(15,23,42,0.9);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow:
+                0 0 24px rgba(56,189,248,0.8),
+                0 4px 12px rgba(15,23,42,0.9);
         }
 
         .result {
@@ -267,60 +278,123 @@
             <div class="nav-title">Star Classifier</div>
             <div class="nav-links">
                 <a href="/">Predict</a>
-                <a href="/model" class="active">Model & Features</a>
+                <a href="/model">Model & Features</a>
                 <a href="/stars">Stars & Types</a>
+                <a href="/exoplanet" class="active">Exoplanet Mass</a>
             </div>
         </nav>
 
         <div class="container">
-            <h1>How the Model Works</h1>
-            <div class="subtitle">Decision tree classifier on stellar properties</div>
+            <h1>Exoplanet Mass Regression</h1>
+            <div class="subtitle">Linear regression on exoplanet catalog</div>
 
             <div class="intro">
-                The core of this project is a <strong>Decision Tree classifier</strong>, a supervised machine learning
-                algorithm that learns a set of if‑then rules from labeled examples. Each star in the training dataset
-                is described by four physical features: <strong>temperature</strong>, <strong>luminosity</strong>,
-                <strong>radius</strong>, and <strong>absolute magnitude</strong>. The decision tree repeatedly splits
-                the data based on thresholds on these features, such as “temperature &gt; 10,000 K” or “luminosity
-                &lt; 0.01 L/Lo”, to separate different star types into purer groups. At the end of training, each leaf
-                of the tree corresponds to a region of the feature space where most stars belong to a single class,
-                for example white dwarfs or supergiants. [web:73][web:80]
+                This page uses a <strong>linear regression model</strong> trained on an exoplanet catalog
+                to estimate a planet’s mass multiplier from its orbital and stellar properties. The target
+                value is the <strong>mass multiplier</strong>, which expresses the planet’s mass relative
+                to either Earth or Jupiter. The input features are distance to the system, stellar magnitude,
+                orbital radius, orbital period, eccentricity, and discovery year. The model learns how these
+                quantities correlate with planet mass across thousands of known exoplanets. [file:93][web:18]
             </div>
 
-            <div class="intro">
-                For a new star, the model follows exactly the same set of rules: it starts at the root of the tree and
-                moves down, evaluating each condition on the input features until it reaches a leaf. The class with the
-                highest proportion of training examples in that leaf becomes the prediction, and the relative frequency
-                of each class in that leaf is used to compute a <strong>probability distribution</strong> over all six
-                types, which appears in the interface as the “confidence” of the prediction. This approach works well
-                on structured scientific data, where meaningful physical thresholds exist, such as the temperature
-                ranges that separate hot blue stars from cooler red stars or the luminosity gaps between dwarfs and
-                supergiants. [web:73][web:72]
-            </div>
+            <form id="exo-form">
+                <div class="field">
+                    <label for="distance">Distance (ly)</label>
+                    <input type="number" id="distance" step="0.01" required>
+                </div>
 
-            <div class="intro">
-                The features in the CSV file have clear astrophysical interpretations. The
-                <strong>temperature</strong> (in Kelvin) controls the color of the star and reflects the average
-                surface energy of the emitted photons. The <strong>luminosity</strong> (in units of the Sun’s
-                luminosity L/Lo) measures the total power output, while the <strong>radius</strong> (in units of the
-                Sun’s radius R/Ro) tells how large the star is compared to the Sun. The <strong>absolute magnitude</strong>
-                is a logarithmic measure of intrinsic brightness: lower or more negative magnitudes correspond to more
-                luminous stars. Together, these quantities are strongly linked by the Stefan–Boltzmann law, which
-                relates luminosity to temperature and radius, and they define a star’s position on the
-                <strong>Hertzsprung–Russell diagram</strong>, a fundamental tool for classifying stars. [web:82][web:85]
-            </div>
+                <div class="field">
+                    <label for="stellar_magnitude">Stellar magnitude</label>
+                    <input type="number" id="stellar_magnitude" step="0.001" required>
+                </div>
 
-            <div class="intro">
-                During evaluation, the model is tested on a held‑out subset of stars that were not used for training.
-                The metrics reported—accuracy, precision, recall, and F1‑score—summarize how well the decision tree
-                distinguishes each class. Accuracy measures the overall fraction of correct predictions, while
-                precision and recall focus on how reliably the model identifies a specific type, for example how often
-                objects predicted as “white dwarfs” are truly white dwarfs and how many actual white dwarfs are
-                recovered. The F1‑score is the harmonic mean of precision and recall. In this project, the model
-                achieves very high scores on all classes, which reflects the fact that the star types in the dataset
-                occupy well separated regions in temperature–luminosity space. [web:74][web:79][web:81]
+                <div class="field">
+                    <label for="orbital_radius">Orbital radius</label>
+                    <input type="number" id="orbital_radius" step="0.000001" required>
+                </div>
+
+                <div class="field">
+                    <label for="orbital_period">Orbital period</label>
+                    <input type="number" id="orbital_period" step="0.000001" required>
+                </div>
+
+                <div class="field">
+                    <label for="eccentricity">Eccentricity</label>
+                    <input type="number" id="eccentricity" step="0.001" required>
+                </div>
+
+                <div class="field">
+                    <label for="discovery_year">Discovery year</label>
+                    <input type="number" id="discovery_year" step="1" required>
+                </div>
+
+                <div class="actions">
+                    <button type="submit">Predict Mass</button>
+                </div>
+            </form>
+
+            <div id="exo-result" class="result"></div>
+
+            <div class="intro" style="margin-top:14px;">
+                The regression performance is summarized by the <strong>MAE</strong> (mean absolute error),
+                <strong>RMSE</strong> (root mean squared error), and <strong>R²</strong> (coefficient of determination).
+                MAE and RMSE quantify the average difference between predicted and true mass multipliers, while R²
+                indicates how much of the variance in the data is explained by the model. In addition to the numeric
+                metrics, two diagrams were generated during training: a true‑vs‑predicted scatter plot and a residual
+                plot, which help visually evaluate whether the model is systematically over‑ or under‑estimating
+                masses for certain ranges of exoplanet properties. [web:74][web:81]
             </div>
         </div>
     </div>
+
+    <script>
+        const exoForm = document.getElementById('exo-form');
+        const exoResult = document.getElementById('exo-result');
+
+        exoForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            exoResult.textContent = "Predicting...";
+            exoResult.classList.remove('error', 'highlight');
+
+            const payload = {
+                distance: parseFloat(document.getElementById('distance').value),
+                stellar_magnitude: parseFloat(document.getElementById('stellar_magnitude').value),
+                orbital_radius: parseFloat(document.getElementById('orbital_radius').value),
+                orbital_period: parseFloat(document.getElementById('orbital_period').value),
+                eccentricity: parseFloat(document.getElementById('eccentricity').value),
+                discovery_year: parseFloat(document.getElementById('discovery_year').value)
+            };
+
+            try {
+                const response = await fetch('/predict_exoplanet', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errData = await response.json();
+                    exoResult.textContent = "Error: " + (errData.error || response.statusText);
+                    exoResult.classList.add('error');
+                    return;
+                }
+
+                const data = await response.json();
+                let text = `Predicted mass multiplier: ${data.predicted_mass_multiplier.toFixed(3)}`;
+
+                if (data.metrics) {
+                    text += `\nMAE: ${data.metrics.mae.toFixed(3)}`;
+                    text += `\nRMSE: ${data.metrics.rmse.toFixed(3)}`;
+                    text += `\nR²: ${data.metrics.r2.toFixed(3)}`;
+                }
+
+                exoResult.textContent = text;
+                exoResult.classList.add('highlight');
+            } catch (error) {
+                exoResult.textContent = "Error: " + error.message;
+                exoResult.classList.add('error');
+            }
+        });
+    </script>
 </body>
 </html>
